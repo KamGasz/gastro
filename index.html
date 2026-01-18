@@ -3,229 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smaki Białej - Gastronomia Biała Podlaska</title>
+    <title>Smaki Białej - Pełna Lista</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-green: #27ae60;
-            --light-green: #ebf7ee;
-            --dark-green: #1e8449;
-            --accent: #f1c40f;
-            --bg: #fdfdfd;
+            --primary-green: #2ecc71;
+            --dark-green: #27ae60;
+            --light-bg: #f4f7f6;
         }
 
-        body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            margin: 0;
-            background-color: var(--bg);
-            color: #333;
-        }
-
-        header {
-            background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-            border-bottom-left-radius: 30px;
-            border-bottom-right-radius: 30px;
-            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.2);
-        }
-
-        .search-section {
-            padding: 20px;
-            margin-top: -30px;
-        }
-
-        .search-box {
-            background: white;
-            padding: 8px 15px;
-            border-radius: 50px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-        }
-
-        .search-box input {
-            border: none;
-            width: 100%;
-            padding: 12px;
-            outline: none;
-            font-size: 16px;
-        }
-
-        .container {
-            padding: 10px 20px;
-            max-width: 600px;
-            margin: auto;
-        }
-
-        .restaurant-card {
-            background: white;
-            border-radius: 20px;
-            padding: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.04);
-            border: 1px solid var(--light-green);
-            transition: transform 0.2s;
-        }
-
-        .restaurant-card:active {
-            transform: scale(0.98);
-        }
-
-        .header-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        h3 { margin: 0; color: var(--dark-green); font-size: 20px; }
+        body { font-family: 'Inter', sans-serif; margin: 0; background: var(--light-bg); }
         
-        .type { color: #888; font-size: 13px; margin-top: 4px; }
-
-        .delivery-badge {
-            font-size: 11px;
-            padding: 5px 12px;
-            border-radius: 50px;
-            font-weight: bold;
+        header { 
+            background: var(--dark-green); color: white; padding: 25px; 
+            text-align: center; border-radius: 0 0 25px 25px;
         }
 
-        .delivery-yes { background: var(--light-green); color: var(--dark-green); }
-        .delivery-no { background: #fee; color: #e74c3c; }
-
-        .details {
-            margin-top: 15px;
-            font-size: 14px;
-            color: #555;
+        .filter-bar {
+            display: flex; gap: 10px; padding: 15px; overflow-x: auto;
+            white-space: nowrap; sticky; top: 0; background: var(--light-bg); z-index: 10;
         }
 
-        .details div { margin-bottom: 6px; }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
+        .filter-btn {
+            background: white; border: 1px solid var(--primary-green);
+            padding: 8px 15px; border-radius: 20px; font-size: 13px; cursor: pointer;
         }
 
-        .btn {
-            flex: 1;
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 14px;
-            transition: 0.3s;
+        .filter-btn.active { background: var(--primary-green); color: white; }
+
+        .container { padding: 0 15px; }
+
+        .card {
+            background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid var(--primary-green);
         }
 
-        .btn-green { background: var(--primary-green); color: white; }
-        .btn-outline { border: 2px solid var(--primary-green); color: var(--primary-green); }
+        .badge { font-size: 10px; padding: 4px 8px; border-radius: 5px; text-transform: uppercase; font-weight: bold; }
+        .delivery { background: #d4edda; color: #155724; }
+        .no-delivery { background: #f8d7da; color: #721c24; }
 
-        #no-results {
-            text-align: center;
-            display: none;
-            padding: 40px;
-            color: #999;
+        .card h3 { margin: 5px 0; font-size: 18px; }
+        .card p { margin: 3px 0; font-size: 13px; color: #666; }
+
+        .btn-call {
+            display: inline-block; margin-top: 10px; background: var(--primary-green);
+            color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none; width: 100%; text-align: center; box-sizing: border-box;
         }
     </style>
 </head>
 <body>
 
 <header>
-    <h1><i class="fas fa-utensils"></i> Smaki Białej</h1>
-    <p>Odkryj najlepszą gastronomię w okolicy</p>
+    <h2>Smaki Białej Podlaskiej</h2>
+    <input type="text" id="search" placeholder="Czego szukasz?" onkeyup="app.filter()" style="width:90%; padding:10px; border-radius:10px; border:none; margin-top:10px;">
 </header>
 
-<div class="search-section">
-    <div class="search-box">
-        <i class="fas fa-search" style="color: var(--primary-green)"></i>
-        <input type="text" id="searchInput" onkeyup="filterRestaurants()" placeholder="Wpisz pizzę, burgera lub nazwę...">
-    </div>
+<div class="filter-bar">
+    <button class="filter-btn active" onclick="app.setFilter('all', this)">Wszystkie</button>
+    <button class="filter-btn" onclick="app.setFilter('delivery', this)">Z dostawą</button>
+    <button class="filter-btn" onclick="app.setFilter('pizza', this)">Pizza</button>
+    <button class="filter-btn" onclick="app.setFilter('burger', this)">Burgery</button>
 </div>
 
-<div class="container" id="restaurantsList">
-    <div class="restaurant-card" data-name="Pizzeria Roma" data-type="Pizza Włoska">
-        <div class="header-card">
-            <div>
-                <h3>Pizzeria Roma</h3>
-                <div class="type">Kuchnia Włoska • Pizza</div>
-            </div>
-            <span class="delivery-badge delivery-yes"><i class="fas fa-truck"></i> Dostawa</span>
-        </div>
-        <div class="details">
-            <div><i class="fas fa-map-marker-alt"></i> ul. Brzeska 20, Biała Podlaska</div>
-            <div><i class="fas fa-clock"></i> Otwarte do 22:00</div>
-        </div>
-        <div class="btn-group">
-            <a href="tel:123456789" class="btn btn-green">Zadzwoń</a>
-            <a href="#" class="btn btn-outline">Menu</a>
-        </div>
-    </div>
-
-    <div class="restaurant-card" data-name="Bierhalle" data-type="Burgery Mięso">
-        <div class="header-card">
-            <div>
-                <h3>Restauracja Regionalna</h3>
-                <div class="type">Kuchnia Polska • Obiady</div>
-            </div>
-            <span class="delivery-badge delivery-no"><i class="fas fa-store"></i> Tylko stacjonarnie</span>
-        </div>
-        <div class="details">
-            <div><i class="fas fa-map-marker-alt"></i> Plac Wolności, Biała Podlaska</div>
-            <div><i class="fas fa-clock"></i> Otwarte do 21:00</div>
-        </div>
-        <div class="btn-group">
-            <a href="tel:123456789" class="btn btn-green">Rezerwuj</a>
-            <a href="#" class="btn btn-outline">Lokalizacja</a>
-        </div>
-    </div>
-
-    <div class="restaurant-card" data-name="Sushi House" data-type="Sushi Azjatycka">
-        <div class="header-card">
-            <div>
-                <h3>Sushi House</h3>
-                <div class="type">Kuchnia Japońska</div>
-            </div>
-            <span class="delivery-badge delivery-yes"><i class="fas fa-truck"></i> Dostawa</span>
-        </div>
-        <div class="details">
-            <div><i class="fas fa-map-marker-alt"></i> ul. Sidorska, Biała Podlaska</div>
-            <div><i class="fas fa-clock"></i> Otwarte do 23:00</div>
-        </div>
-        <div class="btn-group">
-            <a href="tel:123456789" class="btn btn-green">Zamów online</a>
-            <a href="#" class="btn btn-outline">Opinie</a>
-        </div>
-    </div>
-</div>
-
-<div id="no-results">
-    <i class="fas fa-search-minus fa-3x"></i>
-    <p>Nie znaleźliśmy punktu o tej nazwie...</p>
-</div>
+<div class="container" id="list"></div>
 
 <script>
-    function filterRestaurants() {
-        let input = document.getElementById('searchInput').value.toLowerCase();
-        let cards = document.getElementsByClassName('restaurant-card');
-        let list = document.getElementById('restaurantsList');
-        let noResults = document.getElementById('no-results');
-        let visibleCount = 0;
+const venues = [
+    { name: "Pizzeria Da Grasso", type: "pizza", address: "ul. Janczewskiego 1", delivery: true, phone: "833425555" },
+    { name: "Restauracja Verona", type: "pizza", address: "ul. Brzeska 52", delivery: true, phone: "833433333" },
+    { name: "Bierhalle", type: "polskie", address: "ul. Sidorska 2", delivery: false, phone: "833444444" },
+    { name: "Burgery u rzeźnika", type: "burger", address: "ul. Narutowicza", delivery: true, phone: "500600700" },
+    { name: "Restauracja Sosnowy Raj", type: "obiady", address: "ul. Warszawska", delivery: true, phone: "833420000" },
+    { name: "Kebab Podlaski", type: "kebab", address: "ul. Brzeska", delivery: true, phone: "833421111" },
+    { name: "Restauracja Hotelu Capitol", type: "elegancka", address: "ul. Reymonta 3", delivery: false, phone: "833442521" },
+    { name: "Pizzeria Soprano", type: "pizza", address: "ul. Terebelska 67", delivery: true, phone: "833411122" },
+    { name: "Stacja Pizza", type: "pizza", address: "ul. Sidorska 102", delivery: true, phone: "833445566" }
+];
 
-        for (let i = 0; i < cards.length; i++) {
-            let name = cards[i].getAttribute('data-name').toLowerCase();
-            let type = cards[i].getAttribute('data-type').toLowerCase();
-            
-            if (name.includes(input) || type.includes(input)) {
-                cards[i].style.display = "";
-                visibleCount++;
-            } else {
-                cards[i].style.display = "none";
+const app = {
+    currentFilter: 'all',
+    
+    render() {
+        const list = document.getElementById('list');
+        const searchTerm = document.getElementById('search').value.toLowerCase();
+        list.innerHTML = '';
+
+        venues.forEach(v => {
+            const matchesSearch = v.name.toLowerCase().includes(searchTerm);
+            const matchesFilter = this.currentFilter === 'all' || 
+                                 (this.currentFilter === 'delivery' && v.delivery) ||
+                                 v.type === this.currentFilter;
+
+            if (matchesSearch && matchesFilter) {
+                list.innerHTML += `
+                    <div class="card">
+                        <span class="badge ${v.delivery ? 'delivery' : 'no-delivery'}">
+                            ${v.delivery ? 'Dostawa: TAK' : 'Tylko na miejscu'}
+                        </span>
+                        <h3>${v.name}</h3>
+                        <p><i class="fas fa-map-marker-alt"></i> ${v.address}</p>
+                        <a href="tel:${v.phone}" class="btn-call">Zadzwoń teraz</a>
+                    </div>
+                `;
             }
-        }
+        });
+    },
 
-        noResults.style.display = visibleCount === 0 ? "block" : "none";
-    }
+    setFilter(f, btn) {
+        this.currentFilter = f;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.render();
+    },
+
+    filter() { this.render(); }
+};
+
+app.render(); // Start aplikacji
 </script>
 
 </body>
