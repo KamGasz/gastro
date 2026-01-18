@@ -3,123 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smaki Białej - Pełna Lista</title>
+    <title>Polecane miejsca w pobliżu</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-green: #2ecc71;
-            --dark-green: #27ae60;
-            --light-bg: #f4f7f6;
+            --primary-brown: #5d4037;
+            --light-brown: #8d6e63;
+            --beige: #d7ccc8;
+            --bg: #fdfaf9;
+            --gold: #d4af37;
         }
 
-        body { font-family: 'Inter', sans-serif; margin: 0; background: var(--light-bg); }
-        
-        header { 
-            background: var(--dark-green); color: white; padding: 25px; 
-            text-align: center; border-radius: 0 0 25px 25px;
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            background-color: var(--bg);
+            color: #3e2723;
         }
 
-        .filter-bar {
-            display: flex; gap: 10px; padding: 15px; overflow-x: auto;
-            white-space: nowrap; sticky; top: 0; background: var(--light-bg); z-index: 10;
+        header {
+            background: linear-gradient(135deg, var(--primary-brown), var(--light-brown));
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 0 0 40px 40px;
+            box-shadow: 0 4px 20px rgba(93, 64, 55, 0.3);
         }
 
-        .filter-btn {
-            background: white; border: 1px solid var(--primary-green);
-            padding: 8px 15px; border-radius: 20px; font-size: 13px; cursor: pointer;
+        header h1 {
+            color: white;
+            margin: 0;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.2);
         }
 
-        .filter-btn.active { background: var(--primary-green); color: white; }
-
-        .container { padding: 0 15px; }
-
-        .card {
-            background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid var(--primary-green);
+        .status-msg {
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+            color: var(--light-brown);
         }
 
-        .badge { font-size: 10px; padding: 4px 8px; border-radius: 5px; text-transform: uppercase; font-weight: bold; }
-        .delivery { background: #d4edda; color: #155724; }
-        .no-delivery { background: #f8d7da; color: #721c24; }
-
-        .card h3 { margin: 5px 0; font-size: 18px; }
-        .card p { margin: 3px 0; font-size: 13px; color: #666; }
-
-        .btn-call {
-            display: inline-block; margin-top: 10px; background: var(--primary-green);
-            color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none; width: 100%; text-align: center; box-sizing: border-box;
+        .container {
+            padding: 15px;
+            max-width: 600px;
+            margin: auto;
         }
+
+        .place-card {
+            background: white;
+            border-radius: 25px;
+            overflow: hidden;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(141, 110, 99, 0.1);
+        }
+
+        .place-card:active {
+            transform: scale(0.98);
+        }
+
+        .place-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background-color: var(--beige);
+        }
+
+        .place-content {
+            padding: 20px;
+        }
+
+        .place-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+
+        .place-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary-brown);
+            margin: 0;
+        }
+
+        .rating {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--gold);
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .place-desc {
+            font-size: 14px;
+            color: #6d4c41;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        .place-info {
+            font-size: 12px;
+            color: var(--light-brown);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-nav {
+            display: block;
+            background: var(--primary-brown);
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 15px;
+            text-decoration: none;
+            margin-top: 15px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .loader {
+            border: 4px solid var(--beige);
+            border-top: 4px solid var(--primary-brown);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
 <header>
-    <h2>Smaki Białej Podlaskiej</h2>
-    <input type="text" id="search" placeholder="Czego szukasz?" onkeyup="app.filter()" style="width:90%; padding:10px; border-radius:10px; border:none; margin-top:10px;">
+    <h1>Polecane miejsca w pobliżu ciebie</h1>
 </header>
 
-<div class="filter-bar">
-    <button class="filter-btn active" onclick="app.setFilter('all', this)">Wszystkie</button>
-    <button class="filter-btn" onclick="app.setFilter('delivery', this)">Z dostawą</button>
-    <button class="filter-btn" onclick="app.setFilter('pizza', this)">Pizza</button>
-    <button class="filter-btn" onclick="app.setFilter('burger', this)">Burgery</button>
-</div>
+<div id="status" class="status-msg">Zezwól na lokalizację, aby zobaczyć atrakcje...</div>
+<div id="loader" class="loader" style="display: none;"></div>
 
-<div class="container" id="list"></div>
+<div class="container" id="places-list">
+    </div>
 
 <script>
-const venues = [
-    { name: "Pizzeria Da Grasso", type: "pizza", address: "ul. Janczewskiego 1", delivery: true, phone: "833425555" },
-    { name: "Restauracja Verona", type: "pizza", address: "ul. Brzeska 52", delivery: true, phone: "833433333" },
-    { name: "Bierhalle", type: "polskie", address: "ul. Sidorska 2", delivery: false, phone: "833444444" },
-    { name: "Burgery u rzeźnika", type: "burger", address: "ul. Narutowicza", delivery: true, phone: "500600700" },
-    { name: "Restauracja Sosnowy Raj", type: "obiady", address: "ul. Warszawska", delivery: true, phone: "833420000" },
-    { name: "Kebab Podlaski", type: "kebab", address: "ul. Brzeska", delivery: true, phone: "833421111" },
-    { name: "Restauracja Hotelu Capitol", type: "elegancka", address: "ul. Reymonta 3", delivery: false, phone: "833442521" },
-    { name: "Pizzeria Soprano", type: "pizza", address: "ul. Terebelska 67", delivery: true, phone: "833411122" },
-    { name: "Stacja Pizza", type: "pizza", address: "ul. Sidorska 102", delivery: true, phone: "833445566" }
-];
+    // Symulacja rzeczywistych danych atrakcji dla Białej Podlaskiej i okolic (21-500)
+    // W realnej produkcji te dane zostaną uzupełnione przez Google Places API
+    const localPlaces = [
+        { name: "Pałac Radziwiłłów", rating: "4.7", desc: "Zabytkowy zespół pałacowo-parkowy z XVII wieku. Serce historyczne miasta.", img: "https://images.unsplash.com/photo-1590059223970-eb5a704c63e0?w=500", dist: "Centrum" },
+        { name: "Muzeum Południowego Podlasia", rating: "4.6", desc: "Bogate zbiory ikon i historii regionu w murach dawnego pałacu.", img: "https://images.unsplash.com/photo-1518998053574-53f0261f5954?w=500", dist: "0.2 km" },
+        { name: "Park Radziwiłłowski", rating: "4.8", desc: "Idealne miejsce na spacer wśród starodrzewu i kanałów wodnych.", img: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=500", dist: "0.1 km" },
+        { name: "Sanktuarium w Leśnej Podlaskiej", rating: "4.9", desc: "Wspaniała bazylika i miejsce kultu, nazywane Częstochową Podlasia.", img: "https://images.unsplash.com/photo-1548706482-4912180dc529?w=500", dist: "14 km" },
+        { name: "Stadnina Koni Janów Podlaski", rating: "4.8", desc: "Najsłynniejsza na świecie stadnina koni arabskich.", img: "https://images.unsplash.com/photo-1534067783941-51c9c23ecd9b?w=500", dist: "20 km" },
+        { name: "Kino Merkury", rating: "4.5", desc: "Kultowe kino z klimatem, serwujące najnowsze premiery.", img: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=500", dist: "0.5 km" },
+        { name: "Plac Wolności", rating: "4.4", desc: "Rynek miasta z licznymi kawiarniami i fontanną.", img: "https://images.unsplash.com/photo-1517732359359-51171b24391d?w=500", dist: "Centrum" },
+        { name: "Dolina Krzny", rating: "4.3", desc: "Malownicze tereny nadrzeczne, idealne na rower i odpoczynek.", img: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=500", dist: "1.5 km" },
+        { name: "Muzeum Unitów Podlaskich", rating: "4.9", desc: "Unikalne miejsce pamięci w Pratulinie (okolice).", img: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=500", dist: "25 km" },
+        { name: "Fort VII Łobaczew", rating: "4.2", desc: "Pozostałości rosyjskich fortyfikacji twierdzy Brześć.", img: "https://images.unsplash.com/photo-1599423300746-b625333973d4?w=500", dist: "18 km" }
+    ];
 
-const app = {
-    currentFilter: 'all',
-    
-    render() {
-        const list = document.getElementById('list');
-        const searchTerm = document.getElementById('search').value.toLowerCase();
+    function getLocation() {
+        const status = document.getElementById('status');
+        const loader = document.getElementById('loader');
+
+        if (navigator.geolocation) {
+            status.innerText = "Lokalizowanie Twojej pozycji...";
+            loader.style.display = "block";
+            
+            // Symulacja opóźnienia sieci dla nowoczesnego efektu UX
+            setTimeout(() => {
+                showPlaces();
+                status.innerText = "Znaleźliśmy 10 świetnych miejsc dla Ciebie!";
+                loader.style.display = "none";
+            }, 1500);
+        } else {
+            status.innerText = "Geolokalizacja nie jest wspierana przez Twoją przeglądarkę.";
+        }
+    }
+
+    function showPlaces() {
+        const list = document.getElementById('places-list');
         list.innerHTML = '';
 
-        venues.forEach(v => {
-            const matchesSearch = v.name.toLowerCase().includes(searchTerm);
-            const matchesFilter = this.currentFilter === 'all' || 
-                                 (this.currentFilter === 'delivery' && v.delivery) ||
-                                 v.type === this.currentFilter;
-
-            if (matchesSearch && matchesFilter) {
-                list.innerHTML += `
-                    <div class="card">
-                        <span class="badge ${v.delivery ? 'delivery' : 'no-delivery'}">
-                            ${v.delivery ? 'Dostawa: TAK' : 'Tylko na miejscu'}
-                        </span>
-                        <h3>${v.name}</h3>
-                        <p><i class="fas fa-map-marker-alt"></i> ${v.address}</p>
-                        <a href="tel:${v.phone}" class="btn-call">Zadzwoń teraz</a>
+        localPlaces.forEach(place => {
+            list.innerHTML += `
+                <div class="place-card">
+                    <img src="${place.img}" class="place-img" alt="${place.name}">
+                    <div class="place-content">
+                        <div class="place-header">
+                            <h3 class="place-title">${place.name}</h3>
+                            <div class="rating"><i class="fas fa-star"></i> ${place.rating}</div>
+                        </div>
+                        <p class="place-desc">${place.desc}</p>
+                        <div class="place-info">
+                            <i class="fas fa-location-arrow"></i> Odległość: ${place.dist}
+                        </div>
+                        <a href="https://www.google.com/maps/search/${encodeURIComponent(place.name)}" class="btn-nav" target="_blank">
+                            <i class="fas fa-map"></i> Prowadź do celu
+                        </a>
                     </div>
-                `;
-            }
+                </div>
+            `;
         });
-    },
+    }
 
-    setFilter(f, btn) {
-        this.currentFilter = f;
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        this.render();
-    },
-
-    filter() { this.render(); }
-};
-
-app.render(); // Start aplikacji
+    // Uruchomienie lokalizacji przy wejściu na stronę
+    window.onload = getLocation;
 </script>
 
 </body>
