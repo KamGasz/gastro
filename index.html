@@ -1,79 +1,178 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHOES.HOME - Oficjalny Sklep</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* ... (poprzednie style: header, grid, modal, colors, toast, drawer) ... */
-
-        .related-section {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
+        :root {
+            --aks-dark: #1a1a1a;
+            --aks-gray: #f5f5f5;
+            --aks-text-light: #757575;
+            --success: #27ae60;
         }
 
-        .related-title {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            background: #fff;
+            color: var(--aks-dark);
+            overflow-x: hidden;
         }
 
-        .related-carousel {
+        /* --- HEADER --- */
+        header {
             display: flex;
-            gap: 15px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-            -webkit-overflow-scrolling: touch;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 1000;
         }
 
-        /* Ukrycie paska przewijania dla estetyki AKS Home */
+        .logo {
+            font-size: 18px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .nav-icons { display: flex; gap: 20px; }
+        .cart-wrapper { position: relative; cursor: pointer; }
+        .cart-count {
+            background: #e63946; color: white; font-size: 10px;
+            padding: 2px 6px; border-radius: 10px;
+            position: absolute; top: -8px; right: -8px; display: none;
+        }
+
+        /* --- HERO & GRID --- */
+        .hero {
+            height: 250px; background: var(--aks-gray);
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+        .hero img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
+        .hero-text { position: absolute; text-align: center; color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+
+        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; }
+        .product-card { background: #fff; padding-bottom: 15px; cursor: pointer; }
+        .product-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: var(--aks-gray); }
+        .product-info { padding: 10px 5px; }
+        .brand { font-size: 10px; text-transform: uppercase; color: var(--aks-text-light); letter-spacing: 1px; }
+        .name { font-size: 14px; font-weight: 500; margin: 4px 0; }
+        .price { font-size: 15px; font-weight: 700; }
+
+        /* --- QUICK VIEW MODAL --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); display: none; z-index: 2000;
+        }
+        .modal-content {
+            position: fixed; bottom: -100%; left: 0; width: 100%;
+            background: #fff; border-radius: 25px 25px 0 0;
+            padding: 30px 20px; transition: bottom 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 2001; box-sizing: border-box; max-height: 90vh; overflow-y: auto;
+        }
+        .modal-content.active { bottom: 0; }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #ccc; cursor: pointer; }
+
+        .modal-grid { display: grid; grid-template-columns: 100px 1fr; gap: 20px; }
+        .modal-img { width: 100%; border-radius: 12px; }
+
+        .variant-label { font-size: 11px; color: var(--aks-text-light); text-transform: uppercase; margin: 15px 0 8px; font-weight: bold; }
+        
+        .color-selector { display: flex; gap: 12px; }
+        .color-option { width: 28px; height: 28px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+        .color-option.active { border-color: var(--aks-dark); transform: scale(1.1); }
+
+        .size-selector { display: flex; gap: 8px; overflow-x: auto; }
+        .size-box { border: 1px solid #ddd; padding: 10px 15px; border-radius: 8px; font-size: 13px; min-width: 45px; text-align: center; cursor: pointer; }
+        .size-box.selected { border-color: var(--aks-dark); background: var(--aks-dark); color: white; }
+
+        .add-to-cart {
+            background: var(--aks-dark); color: white; width: 100%; padding: 16px;
+            border: none; border-radius: 12px; font-weight: 700; font-size: 16px; margin-top: 20px; cursor: pointer;
+        }
+
+        /* --- RELATED PRODUCTS --- */
+        .related-section { margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee; }
+        .related-carousel { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; }
         .related-carousel::-webkit-scrollbar { display: none; }
+        .related-item { min-width: 110px; cursor: pointer; }
+        .related-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; background: var(--aks-gray); }
+        .related-item-name { font-size: 11px; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .related-item {
-            min-width: 120px;
-            max-width: 120px;
-            cursor: pointer;
+        /* --- CART DRAWER --- */
+        .cart-drawer {
+            position: fixed; top: 0; right: -100%; width: 85%; height: 100%;
+            background: #fff; z-index: 4000; transition: right 0.4s ease;
+            display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.1);
         }
+        .cart-drawer.active { right: 0; }
+        .cart-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .cart-items { flex: 1; overflow-y: auto; padding: 20px; }
+        .cart-item { display: grid; grid-template-columns: 60px 1fr auto; gap: 15px; align-items: center; margin-bottom: 15px; }
+        .cart-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; }
+        .cart-footer { padding: 20px; border-top: 1px solid #eee; background: #fafafa; }
 
-        .related-item img {
-            width: 100%;
-            aspect-ratio: 1/1;
-            object-fit: cover;
-            border-radius: 8px;
-            background: var(--aks-gray);
+        /* --- TOAST --- */
+        .toast {
+            position: fixed; top: -100px; left: 20px; right: 20px;
+            background: var(--success); color: white; padding: 15px;
+            border-radius: 12px; text-align: center; z-index: 5000;
+            transition: top 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
         }
+        .toast.show { top: 20px; }
 
-        .related-item-name {
-            font-size: 11px;
-            margin-top: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .related-item-price {
-            font-size: 11px;
-            font-weight: bold;
-        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        .pulse { animation: pulse 0.4s ease-in-out; }
     </style>
 </head>
 <body>
 
+<div id="toast" class="toast">Produkt dodany do koszyka!</div>
+
+<header>
+    <i class="fas fa-bars"></i>
+    <div class="logo">SHOES.HOME</div>
+    <div class="nav-icons">
+        <div class="cart-wrapper" id="cartTrigger">
+            <i class="fas fa-shopping-bag"></i>
+            <span class="cart-count" id="count">0</span>
+        </div>
+    </div>
+</header>
+
+<div class="hero">
+    <img src="https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=800&q=80">
+    <div class="hero-text">
+        <h2 style="margin:0">NEW ARRIVALS</h2>
+        <p style="font-size:12px; letter-spacing:2px">STYL I KOMFORT</p>
+    </div>
+</div>
+
+<div class="product-grid" id="mainGrid"></div>
+
+<div class="modal-overlay" id="overlay" onclick="closeQuickView()"></div>
 <div class="modal-content" id="modal">
     <span class="close-modal" onclick="closeQuickView()">&times;</span>
     <div class="modal-grid">
         <img src="" id="modalImg" class="modal-img">
         <div>
             <h2 id="modalTitle" style="margin:0; font-size: 18px;"></h2>
-            <p id="modalPrice" style="color: var(--aks-text-light); font-weight: bold;"></p>
+            <p id="modalPrice" style="color: var(--aks-text-light); font-weight: 700; margin: 5px 0;"></p>
         </div>
     </div>
     
-    <p class="variant-label">Kolor: <span id="selectedColorName" style="color: #000; font-weight: bold;">Czarny</span></p>
+    <p class="variant-label">Kolor: <span id="colorName" style="color:#000">Czarny</span></p>
     <div class="color-selector">
-        <div class="color-option color-black active" onclick="selectColor(this, 'Czarny')"></div>
-        <div class="color-option color-red" onclick="selectColor(this, 'Czerwony')"></div>
-        <div class="color-option color-white" onclick="selectColor(this, 'Biały')"></div>
+        <div class="color-option active" style="background:#1a1a1a" onclick="selectColor(this, 'Czarny')"></div>
+        <div class="color-option" style="background:#e63946" onclick="selectColor(this, 'Czerwony')"></div>
+        <div class="color-option" style="background:#ddd" onclick="selectColor(this, 'Szary')"></div>
     </div>
 
     <p class="variant-label">Rozmiar:</p>
@@ -81,66 +180,157 @@
         <div class="size-box" onclick="selectSize(this)">38</div>
         <div class="size-box selected" onclick="selectSize(this)">40</div>
         <div class="size-box" onclick="selectSize(this)">42</div>
+        <div class="size-box" onclick="selectSize(this)">44</div>
     </div>
 
-    <button class="add-to-cart" id="finalAddToCartBtn">DODAJ DO KOSZYKA</button>
+    <button class="add-to-cart" onclick="addToCart()">DODAJ DO KOSZYKA</button>
 
     <div class="related-section">
         <div class="related-title">Może Ci się spodobać</div>
-        <div class="related-carousel" id="relatedCarousel">
-            </div>
+        <div class="related-carousel" id="relatedCarousel"></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="cartOverlay" onclick="toggleCart(false)" style="z-index: 3999;"></div>
+<div class="cart-drawer" id="cartDrawer">
+    <div class="cart-header">
+        <h2 style="margin:0; font-size: 16px;">KOSZYK</h2>
+        <i class="fas fa-times" onclick="toggleCart(false)"></i>
+    </div>
+    <div class="cart-items" id="cartList"></div>
+    <div class="cart-footer">
+        <div style="display:flex; justify-content:space-between; font-weight:900; margin-bottom:15px;">
+            <span>TOTAL</span>
+            <span id="totalPrice">0 zł</span>
+        </div>
+        <button class="add-to-cart" style="margin:0" onclick="alert('Przekierowanie do płatności...')">PŁACĘ</button>
     </div>
 </div>
 
 <script>
-    // Baza wszystkich produktów do karuzeli
-    const allProducts = [
-        { title: "Nike Air Max", price: "429 zł", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400" },
-        { title: "Vans Old Skool", price: "299 zł", img: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400" },
-        { title: "Air Jordan 1", price: "599 zł", img: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400" },
-        { title: "Adidas Ultraboost", price: "749 zł", img: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400" },
-        { title: "Puma Classic", price: "349 zł", img: "https://images.unsplash.com/photo-1539185441755-769473a23570?w=400" }
+    const products = [
+        { title: "Nike Air Max", price: 429, img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400" },
+        { title: "Vans Old Skool", price: 299, img: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400" },
+        { title: "Air Jordan 1", price: 599, img: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400" },
+        { title: "Adidas Ultraboost", price: 749, img: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400" },
+        { title: "Puma Classic", price: 349, img: "https://images.unsplash.com/photo-1539185441755-769473a23570?w=400" },
+        { title: "Reebok Club C", price: 399, img: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=400" }
     ];
 
-    // Funkcja otwierania podglądu (zaktualizowana o karuzelę)
+    let cart = [];
+    let current = {};
+    let selColor = "Czarny";
+    let selSize = "40";
+
+    // INICJALIZACJA SKLEPU
+    function init() {
+        const grid = document.getElementById('mainGrid');
+        grid.innerHTML = products.map(p => `
+            <div class="product-card" onclick="openQuickView('${p.title}', ${p.price}, '${p.img}')">
+                <img src="${p.img}" class="product-img">
+                <div class="product-info">
+                    <div class="brand">Premium Selection</div>
+                    <div class="name">${p.title}</div>
+                    <div class="price">${p.price} zł</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // QUICK VIEW
     function openQuickView(title, price, img) {
-        currentProduct = { title, price: parseInt(price), img };
-        
+        current = { title, price, img };
         document.getElementById('modalTitle').innerText = title;
-        document.getElementById('modalPrice').innerText = price;
+        document.getElementById('modalPrice').innerText = price + " zł";
         document.getElementById('modalImg').src = img;
         
-        renderRelated(title); // Generuj rekomendacje (wykluczając obecny produkt)
+        const carousel = document.getElementById('relatedCarousel');
+        carousel.innerHTML = products.filter(p => p.title !== title).map(p => `
+            <div class="related-item" onclick="openQuickView('${p.title}', ${p.price}, '${p.img}')">
+                <img src="${p.img}">
+                <div class="related-item-name">${p.title}</div>
+            </div>
+        `).join('');
 
         document.getElementById('overlay').style.display = 'block';
         setTimeout(() => document.getElementById('modal').classList.add('active'), 10);
     }
 
-    function renderRelated(currentTitle) {
-        const carousel = document.getElementById('relatedCarousel');
-        const related = allProducts.filter(p => p.title !== currentTitle);
+    function closeQuickView() {
+        document.getElementById('modal').classList.remove('active');
+        setTimeout(() => document.getElementById('overlay').style.display = 'none', 400);
+    }
+
+    // WYBORY
+    function selectColor(el, name) {
+        document.querySelectorAll('.color-option').forEach(o => o.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('colorName').innerText = name;
+        selColor = name;
+    }
+
+    function selectSize(el) {
+        document.querySelectorAll('.size-box').forEach(b => b.classList.remove('selected'));
+        el.classList.add('selected');
+        selSize = el.innerText;
+    }
+
+    // KOSZYK
+    function addToCart() {
+        cart.push({...current, color: selColor, size: selSize});
+        updateCart();
+        closeQuickView();
+        showToast();
+    }
+
+    function updateCart() {
+        const list = document.getElementById('cartList');
+        const count = document.getElementById('count');
+        const total = document.getElementById('totalPrice');
         
-        carousel.innerHTML = related.map(p => `
-            <div class="related-item" onclick="switchToProduct('${p.title}', '${p.price}', '${p.img}')">
-                <img src="${p.img}">
-                <div class="related-item-name">${p.title}</div>
-                <div class="related-item-price">${p.price}</div>
-            </div>
-        `).join('');
+        count.innerText = cart.length;
+        count.style.display = cart.length > 0 ? 'block' : 'none';
+        
+        let sum = 0;
+        list.innerHTML = cart.map((item, i) => {
+            sum += item.price;
+            return `
+                <div class="cart-item">
+                    <img src="${item.img}">
+                    <div>
+                        <div style="font-weight:bold">${item.title}</div>
+                        <div style="font-size:10px; color:gray">${item.color} | ${item.size}</div>
+                        <div style="font-weight:bold; margin-top:4px">${item.price} zł</div>
+                    </div>
+                    <i class="fas fa-trash-alt" onclick="removeItem(${i})" style="color:#eee"></i>
+                </div>
+            `;
+        }).join('');
+        total.innerText = sum + " zł";
     }
 
-    // Funkcja pozwalająca "przeskoczyć" na inny produkt wewnątrz modala
-    function switchToProduct(title, price, img) {
-        // Płynna zmiana treści bez zamykania okna
-        const modal = document.getElementById('modal');
-        modal.style.opacity = '0';
+    function removeItem(i) {
+        cart.splice(i, 1);
+        updateCart();
+    }
+
+    function toggleCart(show) {
+        document.getElementById('cartDrawer').classList.toggle('active', show);
+        document.getElementById('cartOverlay').style.display = show ? 'block' : 'none';
+    }
+
+    function showToast() {
+        const t = document.getElementById('toast');
+        t.classList.add('show');
+        document.getElementById('cartTrigger').classList.add('pulse');
         setTimeout(() => {
-            openQuickView(title, price, img);
-            modal.style.opacity = '1';
-        }, 200);
+            t.classList.remove('show');
+            document.getElementById('cartTrigger').classList.remove('pulse');
+        }, 2500);
     }
 
-    // Pozostałe funkcje (selectColor, selectSize, addToCart, toggleCart, toast) pozostają bez zmian
+    document.getElementById('cartTrigger').onclick = () => toggleCart(true);
+    init();
 </script>
 
 </body>
