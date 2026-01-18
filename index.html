@@ -1,222 +1,146 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Polecane miejsca w pobliżu</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary-brown: #5d4037;
-            --light-brown: #8d6e63;
-            --beige: #d7ccc8;
-            --bg: #fdfaf9;
-            --gold: #d4af37;
+        /* ... (poprzednie style: header, grid, modal, colors, toast, drawer) ... */
+
+        .related-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
         }
 
-        body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            background-color: var(--bg);
-            color: #3e2723;
-        }
-
-        header {
-            background: linear-gradient(135deg, var(--primary-brown), var(--light-brown));
-            padding: 40px 20px;
-            text-align: center;
-            border-radius: 0 0 40px 40px;
-            box-shadow: 0 4px 20px rgba(93, 64, 55, 0.3);
-        }
-
-        header h1 {
-            color: white;
-            margin: 0;
-            font-size: 26px;
+        .related-title {
+            font-size: 14px;
             font-weight: 700;
-            letter-spacing: -0.5px;
-            text-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .status-msg {
-            text-align: center;
-            padding: 20px;
-            font-size: 14px;
-            color: var(--light-brown);
+        .related-carousel {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            -webkit-overflow-scrolling: touch;
         }
 
-        .container {
-            padding: 15px;
-            max-width: 600px;
-            margin: auto;
+        /* Ukrycie paska przewijania dla estetyki AKS Home */
+        .related-carousel::-webkit-scrollbar { display: none; }
+
+        .related-item {
+            min-width: 120px;
+            max-width: 120px;
+            cursor: pointer;
         }
 
-        .place-card {
-            background: white;
-            border-radius: 25px;
-            overflow: hidden;
-            margin-bottom: 25px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease;
-            border: 1px solid rgba(141, 110, 99, 0.1);
-        }
-
-        .place-card:active {
-            transform: scale(0.98);
-        }
-
-        .place-img {
+        .related-item img {
             width: 100%;
-            height: 200px;
+            aspect-ratio: 1/1;
             object-fit: cover;
-            background-color: var(--beige);
+            border-radius: 8px;
+            background: var(--aks-gray);
         }
 
-        .place-content {
-            padding: 20px;
+        .related-item-name {
+            font-size: 11px;
+            margin-top: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .place-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-        }
-
-        .place-title {
-            font-size: 20px;
+        .related-item-price {
+            font-size: 11px;
             font-weight: bold;
-            color: var(--primary-brown);
-            margin: 0;
         }
-
-        .rating {
-            background: rgba(212, 175, 55, 0.1);
-            color: var(--gold);
-            padding: 5px 10px;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .place-desc {
-            font-size: 14px;
-            color: #6d4c41;
-            margin: 10px 0;
-            line-height: 1.5;
-        }
-
-        .place-info {
-            font-size: 12px;
-            color: var(--light-brown);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .btn-nav {
-            display: block;
-            background: var(--primary-brown);
-            color: white;
-            text-align: center;
-            padding: 12px;
-            border-radius: 15px;
-            text-decoration: none;
-            margin-top: 15px;
-            font-weight: 600;
-            transition: 0.3s;
-        }
-
-        .loader {
-            border: 4px solid var(--beige);
-            border-top: 4px solid var(--primary-brown);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>Polecane miejsca w pobliżu ciebie</h1>
-</header>
-
-<div id="status" class="status-msg">Zezwól na lokalizację, aby zobaczyć atrakcje...</div>
-<div id="loader" class="loader" style="display: none;"></div>
-
-<div class="container" id="places-list">
+<div class="modal-content" id="modal">
+    <span class="close-modal" onclick="closeQuickView()">&times;</span>
+    <div class="modal-grid">
+        <img src="" id="modalImg" class="modal-img">
+        <div>
+            <h2 id="modalTitle" style="margin:0; font-size: 18px;"></h2>
+            <p id="modalPrice" style="color: var(--aks-text-light); font-weight: bold;"></p>
+        </div>
+    </div>
+    
+    <p class="variant-label">Kolor: <span id="selectedColorName" style="color: #000; font-weight: bold;">Czarny</span></p>
+    <div class="color-selector">
+        <div class="color-option color-black active" onclick="selectColor(this, 'Czarny')"></div>
+        <div class="color-option color-red" onclick="selectColor(this, 'Czerwony')"></div>
+        <div class="color-option color-white" onclick="selectColor(this, 'Biały')"></div>
     </div>
 
+    <p class="variant-label">Rozmiar:</p>
+    <div class="size-selector">
+        <div class="size-box" onclick="selectSize(this)">38</div>
+        <div class="size-box selected" onclick="selectSize(this)">40</div>
+        <div class="size-box" onclick="selectSize(this)">42</div>
+    </div>
+
+    <button class="add-to-cart" id="finalAddToCartBtn">DODAJ DO KOSZYKA</button>
+
+    <div class="related-section">
+        <div class="related-title">Może Ci się spodobać</div>
+        <div class="related-carousel" id="relatedCarousel">
+            </div>
+    </div>
+</div>
+
 <script>
-    // Symulacja rzeczywistych danych atrakcji dla Białej Podlaskiej i okolic (21-500)
-    // W realnej produkcji te dane zostaną uzupełnione przez Google Places API
-    const localPlaces = [
-        { name: "Pałac Radziwiłłów", rating: "4.7", desc: "Zabytkowy zespół pałacowo-parkowy z XVII wieku. Serce historyczne miasta.", img: "https://images.unsplash.com/photo-1590059223970-eb5a704c63e0?w=500", dist: "Centrum" },
-        { name: "Muzeum Południowego Podlasia", rating: "4.6", desc: "Bogate zbiory ikon i historii regionu w murach dawnego pałacu.", img: "https://images.unsplash.com/photo-1518998053574-53f0261f5954?w=500", dist: "0.2 km" },
-        { name: "Park Radziwiłłowski", rating: "4.8", desc: "Idealne miejsce na spacer wśród starodrzewu i kanałów wodnych.", img: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=500", dist: "0.1 km" },
-        { name: "Sanktuarium w Leśnej Podlaskiej", rating: "4.9", desc: "Wspaniała bazylika i miejsce kultu, nazywane Częstochową Podlasia.", img: "https://images.unsplash.com/photo-1548706482-4912180dc529?w=500", dist: "14 km" },
-        { name: "Stadnina Koni Janów Podlaski", rating: "4.8", desc: "Najsłynniejsza na świecie stadnina koni arabskich.", img: "https://images.unsplash.com/photo-1534067783941-51c9c23ecd9b?w=500", dist: "20 km" },
-        { name: "Kino Merkury", rating: "4.5", desc: "Kultowe kino z klimatem, serwujące najnowsze premiery.", img: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=500", dist: "0.5 km" },
-        { name: "Plac Wolności", rating: "4.4", desc: "Rynek miasta z licznymi kawiarniami i fontanną.", img: "https://images.unsplash.com/photo-1517732359359-51171b24391d?w=500", dist: "Centrum" },
-        { name: "Dolina Krzny", rating: "4.3", desc: "Malownicze tereny nadrzeczne, idealne na rower i odpoczynek.", img: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=500", dist: "1.5 km" },
-        { name: "Muzeum Unitów Podlaskich", rating: "4.9", desc: "Unikalne miejsce pamięci w Pratulinie (okolice).", img: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=500", dist: "25 km" },
-        { name: "Fort VII Łobaczew", rating: "4.2", desc: "Pozostałości rosyjskich fortyfikacji twierdzy Brześć.", img: "https://images.unsplash.com/photo-1599423300746-b625333973d4?w=500", dist: "18 km" }
+    // Baza wszystkich produktów do karuzeli
+    const allProducts = [
+        { title: "Nike Air Max", price: "429 zł", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400" },
+        { title: "Vans Old Skool", price: "299 zł", img: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400" },
+        { title: "Air Jordan 1", price: "599 zł", img: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400" },
+        { title: "Adidas Ultraboost", price: "749 zł", img: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400" },
+        { title: "Puma Classic", price: "349 zł", img: "https://images.unsplash.com/photo-1539185441755-769473a23570?w=400" }
     ];
 
-    function getLocation() {
-        const status = document.getElementById('status');
-        const loader = document.getElementById('loader');
+    // Funkcja otwierania podglądu (zaktualizowana o karuzelę)
+    function openQuickView(title, price, img) {
+        currentProduct = { title, price: parseInt(price), img };
+        
+        document.getElementById('modalTitle').innerText = title;
+        document.getElementById('modalPrice').innerText = price;
+        document.getElementById('modalImg').src = img;
+        
+        renderRelated(title); // Generuj rekomendacje (wykluczając obecny produkt)
 
-        if (navigator.geolocation) {
-            status.innerText = "Lokalizowanie Twojej pozycji...";
-            loader.style.display = "block";
-            
-            // Symulacja opóźnienia sieci dla nowoczesnego efektu UX
-            setTimeout(() => {
-                showPlaces();
-                status.innerText = "Znaleźliśmy 10 świetnych miejsc dla Ciebie!";
-                loader.style.display = "none";
-            }, 1500);
-        } else {
-            status.innerText = "Geolokalizacja nie jest wspierana przez Twoją przeglądarkę.";
-        }
+        document.getElementById('overlay').style.display = 'block';
+        setTimeout(() => document.getElementById('modal').classList.add('active'), 10);
     }
 
-    function showPlaces() {
-        const list = document.getElementById('places-list');
-        list.innerHTML = '';
-
-        localPlaces.forEach(place => {
-            list.innerHTML += `
-                <div class="place-card">
-                    <img src="${place.img}" class="place-img" alt="${place.name}">
-                    <div class="place-content">
-                        <div class="place-header">
-                            <h3 class="place-title">${place.name}</h3>
-                            <div class="rating"><i class="fas fa-star"></i> ${place.rating}</div>
-                        </div>
-                        <p class="place-desc">${place.desc}</p>
-                        <div class="place-info">
-                            <i class="fas fa-location-arrow"></i> Odległość: ${place.dist}
-                        </div>
-                        <a href="https://www.google.com/maps/search/${encodeURIComponent(place.name)}" class="btn-nav" target="_blank">
-                            <i class="fas fa-map"></i> Prowadź do celu
-                        </a>
-                    </div>
-                </div>
-            `;
-        });
+    function renderRelated(currentTitle) {
+        const carousel = document.getElementById('relatedCarousel');
+        const related = allProducts.filter(p => p.title !== currentTitle);
+        
+        carousel.innerHTML = related.map(p => `
+            <div class="related-item" onclick="switchToProduct('${p.title}', '${p.price}', '${p.img}')">
+                <img src="${p.img}">
+                <div class="related-item-name">${p.title}</div>
+                <div class="related-item-price">${p.price}</div>
+            </div>
+        `).join('');
     }
 
-    // Uruchomienie lokalizacji przy wejściu na stronę
-    window.onload = getLocation;
+    // Funkcja pozwalająca "przeskoczyć" na inny produkt wewnątrz modala
+    function switchToProduct(title, price, img) {
+        // Płynna zmiana treści bez zamykania okna
+        const modal = document.getElementById('modal');
+        modal.style.opacity = '0';
+        setTimeout(() => {
+            openQuickView(title, price, img);
+            modal.style.opacity = '1';
+        }, 200);
+    }
+
+    // Pozostałe funkcje (selectColor, selectSize, addToCart, toggleCart, toast) pozostają bez zmian
 </script>
 
 </body>
